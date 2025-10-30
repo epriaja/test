@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search - XSS Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      max-width: 600px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .warning {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #856404;
+    }
+    .search-box {
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: calc(100% - 100px);
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px 0 0 5px;
+      font-size: 16px;
+      display: inline-block;
+    }
+    button {
+      width: 100px;
+      padding: 12px;
+      background: #f5576c;
+      color: white;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      display: inline-block;
+      vertical-align: top;
+    }
+    button:hover {
+      background: #e4465b;
+    }
+    .results {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+      margin-top: 20px;
+      min-height: 100px;
+    }
+    .results h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+    .result-text {
+      color: #555;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .links {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .links a {
+      color: #f5576c;
+      text-decoration: none;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+    .demo-info {
+      background: #ffe7e7;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+      border-left: 4px solid #f5576c;
+    }
+    .demo-info h3 {
+      color: #d32f2f;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .demo-info code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+      color: #d32f2f;
+      display: block;
+      margin: 5px 0;
+      word-break: break-all;
+    }
+    .demo-info p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Search Page</h1>
+    <div class="warning">
+      <strong>⚠️ Warning:</strong> Halaman ini sengaja vulnerable untuk demo XSS!
+    </div>
+
+    <form action="/search" method="GET" class="search-box">
+      <input type="text" name="q" placeholder="Masukkan kata pencarian..." value="<%= searchQuery %>">
+      <button type="submit">Cari</button>
+    </form>
+
+    <% if (searchQuery) { %>
+      <div class="results">
+        <h2>Hasil Pencarian:</h2>
+        <div class="result-text">
+          Anda mencari: <%= searchQuery %>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="demo-info">
+      <h3>🚨 XSS (Cross-Site Scripting) Demo:</h3>
+      <p>Coba masukkan salah satu payload berikut di search box:</p>
+      <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
+      <code>&lt;img src=x onerror="alert('XSS')"&gt;</code>
+      <code>&lt;svg onload="alert('XSS')"&gt;</code>
+      <p style="margin-top: 10px;">Atau langsung akses URL:</p>
+      <code>/search?q=&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
+    </div>
+
+    <div class="links">
+      <a href="/">← Kembali ke Home</a> |
+      <a href="/login">Ke Login Page →</a>
+    </div>
+  </div>
+</body>
+</html>
