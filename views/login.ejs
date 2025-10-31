@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - SQL Injection Demo</title>
+  <title>SQL Injection Demo - Security Learning Lab</title>
   <style>
     * {
       margin: 0;
@@ -11,34 +11,63 @@
       box-sizing: border-box;
     }
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ee7752 0%, #e73c7e 50%, #23a6d5 100%);
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .navbar {
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.3s;
+    }
+    .navbar a:hover {
+      opacity: 0.8;
+    }
+    .container {
+      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 40px 20px;
     }
-    .container {
+    .form-container {
       background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      max-width: 500px;
+      padding: 50px 40px;
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 450px;
       width: 100%;
     }
     h1 {
-      text-align: center;
       color: #333;
       margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #999;
+      font-size: 14px;
+      margin-bottom: 30px;
     }
     .warning {
       background: #fff3cd;
       border: 1px solid #ffc107;
-      padding: 10px;
+      border-left: 5px solid #ffc107;
+      padding: 12px;
       border-radius: 5px;
-      margin-bottom: 20px;
-      font-size: 14px;
+      margin-bottom: 25px;
+      font-size: 13px;
       color: #856404;
     }
     .form-group {
@@ -46,131 +75,181 @@
     }
     label {
       display: block;
-      margin-bottom: 5px;
-      color: #555;
-      font-weight: bold;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
     }
-    input[type="email"],
     input[type="text"],
+    input[type="email"],
     input[type="password"] {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 16px;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border-color 0.3s;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     input:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: #ee7752;
     }
     button {
       width: 100%;
       padding: 12px;
-      background: #667eea;
+      background: linear-gradient(135deg, #ee7752 0%, #e73c7e 50%, #23a6d5 100%);
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 10px;
     }
     button:hover {
-      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(238, 119, 82, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
     }
     .error {
       background: #f8d7da;
       color: #721c24;
-      padding: 10px;
-      border-radius: 5px;
+      padding: 12px;
+      border-radius: 8px;
       margin-bottom: 20px;
-      border: 1px solid #f5c6cb;
+      border-left: 5px solid #f5c6cb;
+      font-size: 14px;
     }
     .success {
       background: #d4edda;
       color: #155724;
-      padding: 10px;
-      border-radius: 5px;
+      padding: 12px;
+      border-radius: 8px;
       margin-bottom: 20px;
-      border: 1px solid #c3e6cb;
+      border-left: 5px solid #c3e6cb;
+      font-size: 14px;
+    }
+    .demo-section {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    .demo-section h3 {
+      color: #333;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+    .demo-section p {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    .demo-section code {
+      background: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      color: #d32f2f;
+      display: block;
+      margin: 8px 0;
+      border: 1px solid #e0e0e0;
+      word-break: break-all;
+      font-size: 12px;
     }
     .links {
       text-align: center;
       margin-top: 20px;
     }
     .links a {
-      color: #667eea;
+      color: #ee7752;
       text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
     }
     .links a:hover {
       text-decoration: underline;
     }
-    .demo-info {
-      background: #e7f3ff;
-      padding: 15px;
+    .info-box {
+      background: #e3f2fd;
+      border-left: 5px solid #2196F3;
+      padding: 12px;
       border-radius: 5px;
-      margin-top: 20px;
-      border-left: 4px solid #2196F3;
+      margin-top: 15px;
+      font-size: 13px;
+      color: #1565c0;
     }
-    .demo-info h3 {
-      color: #1976D2;
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-    .demo-info code {
-      background: #f5f5f5;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-family: monospace;
-      color: #d32f2f;
-    }
-    .demo-info p {
-      margin: 5px 0;
-      font-size: 14px;
+    @media (max-width: 600px) {
+      .form-container {
+        padding: 30px 20px;
+      }
+      h1 {
+        font-size: 24px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="navbar">
+    <a href="/">← Security Learning Lab</a>
+    <div>
+      <a href="/login" style="margin-right: 20px;">Login</a>
+      <a href="/search">Search</a>
+    </div>
+  </div>
+
   <div class="container">
-    <h1>Login Page</h1>
-    <div class="warning">
-      <strong>⚠️ Warning:</strong> Halaman ini sengaja vulnerable untuk demo keamanan!
-    </div>
+    <div class="form-container">
+      <h1>💉 SQL Injection Demo</h1>
+      <p class="subtitle">Halaman Login yang Vulnerable</p>
 
-    <% if (error) { %>
-      <div class="error"><%= error %></div>
-    <% } %>
-
-    <% if (success) { %>
-      <div class="success"><%= success %></div>
-    <% } %>
-
-    <form method="POST" action="/login">
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="text" id="email" name="email" required>
+      <div class="warning">
+        <strong>⚠️ WARNING:</strong> Halaman ini sengaja dibuat vulnerable untuk tujuan pembelajaran. Jangan coba di website real!
       </div>
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password">
+
+      <% if (error) { %>
+        <div class="error"><%= error %></div>
+      <% } %>
+
+      <% if (success) { %>
+        <div class="success"><strong>✓ Sukses!</strong> <%= success %></div>
+      <% } %>
+
+      <form method="POST" action="/login">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="text" id="email" name="email" placeholder="masukkan email..." required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="masukkan password...">
+        </div>
+        <button type="submit">Login</button>
+      </form>
+
+      <div class="demo-section">
+        <h3>🔓 Cara Eksploitasi SQL Injection:</h3>
+        <p><strong>1. Masukkan di field Email:</strong></p>
+        <code>' OR 1=1 --</code>
+        <p><strong>2. Kosongkan atau isi password apapun</strong></p>
+        <p><strong>3. Klik Login</strong></p>
+        <p>Anda akan berhasil login karena query menjadi: <code>SELECT * FROM users WHERE email = '' OR 1=1 --' AND password = '...'</code></p>
+
+        <div class="info-box">
+          <strong>User Valid untuk Testing:</strong><br>
+          Email: admin@example.com<br>
+          Password: admin123
+        </div>
       </div>
-      <button type="submit">Login</button>
-    </form>
 
-    <div class="demo-info">
-      <h3>🔓 SQL Injection Demo:</h3>
-      <p>Coba masukkan di field Email:</p>
-      <p><code>' OR 1=1 --</code></p>
-      <p>Dan kosongkan password, lalu klik Login</p>
-      <hr style="margin: 10px 0; border: none; border-top: 1px solid #ccc;">
-      <p><strong>User Valid:</strong></p>
-      <p>Email: <code>admin@example.com</code></p>
-      <p>Password: <code>admin123</code></p>
-    </div>
-
-    <div class="links">
-      <a href="/">← Kembali ke Home</a> |
-      <a href="/search">Ke Search Page →</a>
+      <div class="links">
+        <a href="/search">Ke XSS Demo →</a>
+      </div>
     </div>
   </div>
 </body>

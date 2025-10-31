@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search - XSS Demo</title>
+  <title>XSS Demo - Security Learning Lab</title>
   <style>
     * {
       margin: 0;
@@ -11,80 +11,150 @@
       box-sizing: border-box;
     }
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       min-height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+    }
+    .navbar {
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      padding: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.3s;
+    }
+    .navbar a:hover {
+      opacity: 0.8;
     }
     .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .search-container {
       background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      padding: 50px 40px;
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       max-width: 600px;
       width: 100%;
     }
     h1 {
-      text-align: center;
       color: #333;
       margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #999;
+      font-size: 14px;
+      margin-bottom: 30px;
     }
     .warning {
       background: #fff3cd;
       border: 1px solid #ffc107;
-      padding: 10px;
+      border-left: 5px solid #ffc107;
+      padding: 12px;
       border-radius: 5px;
-      margin-bottom: 20px;
-      font-size: 14px;
+      margin-bottom: 25px;
+      font-size: 13px;
       color: #856404;
     }
     .search-box {
-      margin-bottom: 20px;
+      display: flex;
+      gap: 0;
+      margin-bottom: 30px;
     }
     input[type="text"] {
-      width: calc(100% - 100px);
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 5px 0 0 5px;
-      font-size: 16px;
-      display: inline-block;
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-right: none;
+      border-radius: 8px 0 0 8px;
+      font-size: 15px;
+      transition: border-color 0.3s;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    input:focus {
+      outline: none;
+      border-color: #f5576c;
     }
     button {
-      width: 100px;
-      padding: 12px;
-      background: #f5576c;
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       color: white;
       border: none;
-      border-radius: 0 5px 5px 0;
+      border-radius: 0 8px 8px 0;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
-      display: inline-block;
-      vertical-align: top;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
     button:hover {
-      background: #e4465b;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
     }
     .results {
       background: #f8f9fa;
-      padding: 20px;
-      border-radius: 5px;
+      padding: 25px;
+      border-radius: 8px;
       margin-top: 20px;
-      min-height: 100px;
+      min-height: 80px;
+      border-left: 5px solid #f5576c;
     }
     .results h2 {
       color: #333;
       margin-bottom: 15px;
-      font-size: 18px;
+      font-size: 16px;
     }
     .result-text {
       color: #555;
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.6;
+      word-break: break-all;
+    }
+    .demo-section {
+      background: #ffe7e7;
+      padding: 25px;
+      border-radius: 8px;
+      margin-top: 30px;
+      border-left: 5px solid #f5576c;
+    }
+    .demo-section h3 {
+      color: #d32f2f;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+    .demo-section p {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    .demo-section code {
+      background: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      color: #d32f2f;
+      display: block;
+      margin: 8px 0;
+      border: 1px solid #f5c6cb;
+      word-break: break-all;
+      font-size: 12px;
     }
     .links {
       text-align: center;
@@ -93,72 +163,99 @@
     .links a {
       color: #f5576c;
       text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
     }
     .links a:hover {
       text-decoration: underline;
     }
-    .demo-info {
-      background: #ffe7e7;
-      padding: 15px;
+    .info-box {
+      background: #fce4ec;
+      border-left: 5px solid #c2185b;
+      padding: 12px;
       border-radius: 5px;
-      margin-top: 20px;
-      border-left: 4px solid #f5576c;
+      margin-top: 15px;
+      font-size: 13px;
+      color: #880e4f;
     }
-    .demo-info h3 {
-      color: #d32f2f;
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-    .demo-info code {
-      background: #f5f5f5;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-family: monospace;
-      color: #d32f2f;
-      display: block;
-      margin: 5px 0;
-      word-break: break-all;
-    }
-    .demo-info p {
-      margin: 5px 0;
-      font-size: 14px;
+    @media (max-width: 600px) {
+      .search-container {
+        padding: 30px 20px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      .search-box {
+        flex-direction: column;
+      }
+      input[type="text"] {
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        margin-bottom: 10px;
+      }
+      button {
+        border-radius: 8px;
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Search Page</h1>
-    <div class="warning">
-      <strong>⚠️ Warning:</strong> Halaman ini sengaja vulnerable untuk demo XSS!
+  <div class="navbar">
+    <a href="/">← Security Learning Lab</a>
+    <div>
+      <a href="/login" style="margin-right: 20px;">Login</a>
+      <a href="/search">Search</a>
     </div>
+  </div>
 
-    <form action="/search" method="GET" class="search-box">
-      <input type="text" name="q" placeholder="Masukkan kata pencarian..." value="<%= searchQuery %>">
-      <button type="submit">Cari</button>
-    </form>
+  <div class="container">
+    <div class="search-container">
+      <h1>⚡ XSS (Cross-Site Scripting) Demo</h1>
+      <p class="subtitle">Halaman Search yang Vulnerable</p>
 
-    <% if (searchQuery) { %>
-      <div class="results">
-        <h2>Hasil Pencarian:</h2>
-        <div class="result-text">
-          Anda mencari: <%= searchQuery %>
+      <div class="warning">
+        <strong>⚠️ WARNING:</strong> Halaman ini sengaja dibuat vulnerable untuk tujuan pembelajaran. Jangan coba di website real!
+      </div>
+
+      <form action="/search" method="GET" class="search-box">
+        <input type="text" name="q" placeholder="Masukkan kata pencarian atau payload..." value="<%= searchQuery %>">
+        <button type="submit">Cari</button>
+      </form>
+
+      <% if (searchQuery) { %>
+        <div class="results">
+          <h2>Hasil Pencarian:</h2>
+          <div class="result-text">
+            Anda mencari: <%= searchQuery %>
+          </div>
+        </div>
+      <% } %>
+
+      <div class="demo-section">
+        <h3>🚨 Cara Eksploitasi XSS:</h3>
+        <p><strong>Pilih salah satu payload berikut dan masukkan di search box:</strong></p>
+
+        <p><strong>1. JavaScript Alert:</strong></p>
+        <code>&lt;script&gt;alert('XSS Vulnerability!')&lt;/script&gt;</code>
+
+        <p><strong>2. Image Error Handler:</strong></p>
+        <code>&lt;img src=x onerror="alert('XSS')"&gt;</code>
+
+        <p><strong>3. SVG onload:</strong></p>
+        <code>&lt;svg onload="alert('XSS')"&gt;</code>
+
+        <p><strong>4. Langsung dari URL:</strong></p>
+        <code>/search?q=&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
+
+        <div class="info-box">
+          <strong>Penjelasan:</strong> Karena input tidak di-encode/escape, script akan dijalankan langsung di browser. Dalam serangan real, attacker bisa mencuri cookies, session tokens, atau melakukan aksi berbahaya lainnya.
         </div>
       </div>
-    <% } %>
 
-    <div class="demo-info">
-      <h3>🚨 XSS (Cross-Site Scripting) Demo:</h3>
-      <p>Coba masukkan salah satu payload berikut di search box:</p>
-      <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
-      <code>&lt;img src=x onerror="alert('XSS')"&gt;</code>
-      <code>&lt;svg onload="alert('XSS')"&gt;</code>
-      <p style="margin-top: 10px;">Atau langsung akses URL:</p>
-      <code>/search?q=&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
-    </div>
-
-    <div class="links">
-      <a href="/">← Kembali ke Home</a> |
-      <a href="/login">Ke Login Page →</a>
+      <div class="links">
+        <a href="/login">← Ke SQL Injection Demo</a>
+      </div>
     </div>
   </div>
 </body>
